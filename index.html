@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cron 式 ビジュアル ビルダー</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-4 md:p-8">
+<div class="max-w-3xl mx-auto">
+  <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">Cron 式 ビジュアル ビルダー</h1>
+  <p class="text-gray-400 text-sm mb-6">Cron Expression Visual Builder</p>
+
+  <!-- Field Controls -->
+  <div class="bg-gray-800 rounded-xl p-5 mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+      <!-- Minute -->
+      <div>
+        <label for="cronMinute" class="block text-xs text-gray-400 mb-1">分 (Minute)</label>
+        <select id="cronMinute" class="w-full bg-gray-700 border border-gray-600 rounded px-2 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="buildFromControls()">
+          <option value="*">* (毎分)</option>
+          <option value="*/5">*/5 (5分毎)</option>
+          <option value="*/10">*/10 (10分毎)</option>
+          <option value="*/15">*/15 (15分毎)</option>
+          <option value="*/30">*/30 (30分毎)</option>
+          <option value="0">0</option>
+          <option value="15">15</option>
+          <option value="30">30</option>
+          <option value="45">45</option>
+          <option value="custom">カスタム...</option>
+        </select>
+        <input type="text" id="cronMinuteCustom" placeholder="例: 5,10,15" value=""
+          class="hidden w-full mt-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          oninput="buildFromControls()">
+      </div>
+      <!-- Hour -->
+      <div>
+        <label for="cronHour" class="block text-xs text-gray-400 mb-1">時 (Hour)</label>
+        <select id="cronHour" class="w-full bg-gray-700 border border-gray-600 rounded px-2 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="buildFromControls()">
+          <option value="*">* (毎時)</option>
+          <option value="*/2">*/2 (2時間毎)</option>
+          <option value="*/6">*/6 (6時間毎)</option>
+          <option value="*/12">*/12 (12時間毎)</option>
+          <option value="0">0 (午前0時)</option>
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="6">6</option>
+          <option value="9">9</option>
+          <option value="12">12</option>
+          <option value="18">18</option>
+          <option value="23">23</option>
+          <option value="custom">カスタム...</option>
+        </select>
+        <input type="text" id="cronHourCustom" placeholder="例: 9,18" value=""
+          class="hidden w-full mt-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          oninput="buildFromControls()">
+      </div>
+      <!-- Day of Month -->
+      <div>
+        <label for="cronDom" class="block text-xs text-gray-400 mb-1">日 (Day)</label>
+        <select id="cronDom" class="w-full bg-gray-700 border border-gray-600 rounded px-2 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="buildFromControls()">
+          <option value="*">* (毎日)</option>
+          <option value="1">1日</option>
+          <option value="15">15日</option>
+          <option value="L">L (月末)</option>
+          <option value="custom">カスタム...</option>
+        </select>
+        <input type="text" id="cronDomCustom" placeholder="例: 1,15" value=""
+          class="hidden w-full mt-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          oninput="buildFromControls()">
+      </div>
+      <!-- Month -->
+      <div>
+        <label for="cronMonth" class="block text-xs text-gray-400 mb-1">月 (Month)</label>
+        <select id="cronMonth" class="w-full bg-gray-700 border border-gray-600 rounded px-2 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="buildFromControls()">
+          <option value="*">* (毎月)</option>
+          <option value="1">1月</option>
+          <option value="3">3月</option>
+          <option value="6">6月</option>
+          <option value="9">9月</option>
+          <option value="12">12月</option>
+          <option value="1-6">1-6 (上半期)</option>
+          <option value="7-12">7-12 (下半期)</option>
+          <option value="custom">カスタム...</option>
+        </select>
+        <input type="text" id="cronMonthCustom" placeholder="例: 1,4,7,10" value=""
+          class="hidden w-full mt-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          oninput="buildFromControls()">
+      </div>
+      <!-- Day of Week -->
+      <div>
+        <label for="cronDow" class="block text-xs text-gray-400 mb-1">曜日 (DOW)</label>
+        <select id="cronDow" class="w-full bg-gray-700 border border-gray-600 rounded px-2 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="buildFromControls()">
+          <option value="*">* (毎日)</option>
+          <option value="1-5">1-5 (平日)</option>
+          <option value="6,0">6,0 (週末)</option>
+          <option value="0">0 (日)</option>
+          <option value="1">1 (月)</option>
+          <option value="2">2 (火)</option>
+          <option value="3">3 (水)</option>
+          <option value="4">4 (木)</option>
+          <option value="5">5 (金)</option>
+          <option value="6">6 (土)</option>
+          <option value="custom">カスタム...</option>
+        </select>
+        <input type="text" id="cronDowCustom" placeholder="例: 1,3,5" value=""
+          class="hidden w-full mt-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          oninput="buildFromControls()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Cron Expression Box -->
+  <div class="bg-gray-800 rounded-xl p-5 mb-4">
+    <label for="cronExpression" class="block text-sm text-gray-300 mb-2">Cron 式</label>
+    <div class="flex gap-2">
+      <input type="text" id="cronExpression" value="30 2 * * *"
+        class="flex-1 bg-gray-900 border border-gray-600 rounded px-3 py-2 text-white font-mono text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        oninput="parseFromExpression()" aria-label="cron式テキストボックス">
+      <button onclick="copyExpression()" id="copyBtn"
+        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+        コピー
+      </button>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="bg-gray-800 rounded-xl p-5 mb-4">
+    <h2 class="text-xs text-gray-400 mb-2">スケジュール説明</h2>
+    <div id="cronDescription" class="text-base text-indigo-300 font-medium">—</div>
+  </div>
+
+  <!-- Next Executions -->
+  <div class="bg-gray-800 rounded-xl p-5">
+    <h2 class="text-sm font-semibold text-gray-300 mb-3">次の実行時刻（5件）</h2>
+    <ul id="nextTimes" class="space-y-2"></ul>
+  </div>
+</div>
+
+<script>
+const DAYS_JA = ['日', '月', '火', '水', '木', '金', '土'];
+const MONTHS_JA = ['','1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+function getFieldValue(id) {
+  const sel = document.getElementById(id);
+  if (sel.value === 'custom') {
+    const customInput = document.getElementById(id + 'Custom');
+    return customInput.value.trim() || '*';
+  }
+  return sel.value;
+}
+
+function buildFromControls() {
+  ['cronMinute','cronHour','cronDom','cronMonth','cronDow'].forEach(id => {
+    const sel = document.getElementById(id);
+    const customInput = document.getElementById(id + 'Custom');
+    if (sel.value === 'custom') {
+      customInput.classList.remove('hidden');
+    } else {
+      customInput.classList.add('hidden');
+    }
+  });
+  const parts = [
+    getFieldValue('cronMinute'),
+    getFieldValue('cronHour'),
+    getFieldValue('cronDom'),
+    getFieldValue('cronMonth'),
+    getFieldValue('cronDow'),
+  ];
+  const expr = parts.join(' ');
+  document.getElementById('cronExpression').value = expr;
+  updateDescription(parts);
+  updateNextTimes(parts);
+}
+
+function parseFromExpression() {
+  const expr = document.getElementById('cronExpression').value.trim();
+  const parts = expr.split(/\s+/);
+  if (parts.length !== 5) {
+    document.getElementById('cronDescription').textContent = '無効な式 (5フィールド必要)';
+    return;
+  }
+  updateDescription(parts);
+  updateNextTimes(parts);
+}
+
+function describeField(val, type) {
+  if (val === '*') return null;
+  if (type === 'minute') {
+    if (val.startsWith('*/')) return val.slice(2) + '分毎';
+    return '分' + val + '分';
+  }
+  if (type === 'hour') {
+    if (val.startsWith('*/')) return val.slice(2) + '時間毎';
+    const h = parseInt(val, 10);
+    if (!isNaN(h)) return (h < 12 ? '午前' : h === 12 ? '正午' : '午後') + (h % 12 || 12) + '時';
+    return val + '時';
+  }
+  if (type === 'dom') {
+    if (val === 'L') return '月末';
+    return val + '日';
+  }
+  if (type === 'month') {
+    if (val.includes('-')) {
+      const [a, b] = val.split('-').map(Number);
+      return MONTHS_JA[a] + '〜' + MONTHS_JA[b];
+    }
+    const m = parseInt(val, 10);
+    return isNaN(m) ? val + '月' : MONTHS_JA[m] || val;
+  }
+  if (type === 'dow') {
+    if (val === '1-5') return '平日（月〜金）';
+    if (val === '6,0' || val === '0,6') return '週末（土日）';
+    const parts = val.split(',').map(v => DAYS_JA[parseInt(v, 10)] + '曜').filter(Boolean);
+    return parts.join('・') + 'のみ';
+  }
+  return val;
+}
+
+function updateDescription(parts) {
+  const [min, hour, dom, month, dow] = parts;
+  const minuteDesc = describeField(min, 'minute');
+  const hourDesc   = describeField(hour, 'hour');
+  const domDesc    = describeField(dom, 'dom');
+  const monthDesc  = describeField(month, 'month');
+  const dowDesc    = describeField(dow, 'dow');
+
+  let desc = '';
+  if (monthDesc) desc += monthDesc + ' ';
+  if (domDesc) desc += domDesc + ' ';
+  if (dowDesc) desc += dowDesc + ' ';
+  if (hourDesc) desc += hourDesc;
+  else desc += '毎時';
+  if (minuteDesc) desc += minuteDesc;
+  else desc += '0分';
+  desc += ' に実行';
+
+  if (min === '*' && hour === '*' && dom === '*' && month === '*' && dow === '*') {
+    desc = '毎分 実行';
+  }
+
+  document.getElementById('cronDescription').textContent = desc;
+}
+
+// Simple next-run calculator (handles basic patterns)
+function matchesField(val, n, type) {
+  if (val === '*') return true;
+  if (val === 'L') return true; // simplified
+  if (val.startsWith('*/')) {
+    const step = parseInt(val.slice(2), 10);
+    return n % step === 0;
+  }
+  if (val.includes('-') && !val.includes(',')) {
+    const [a, b] = val.split('-').map(Number);
+    return n >= a && n <= b;
+  }
+  if (val.includes(',')) {
+    return val.split(',').map(Number).includes(n);
+  }
+  return parseInt(val, 10) === n;
+}
+
+function updateNextTimes(parts) {
+  const [min, hour, dom, month, dow] = parts;
+  const now = new Date();
+  now.setSeconds(0, 0);
+  now.setMinutes(now.getMinutes() + 1);
+  const results = [];
+  const max = 60 * 24 * 366; // scan up to 1 year of minutes
+  let cur = new Date(now);
+  for (let i = 0; i < max && results.length < 5; i++) {
+    const m = cur.getMinutes();
+    const h = cur.getHours();
+    const d = cur.getDate();
+    const mo = cur.getMonth() + 1;
+    const dw = cur.getDay();
+    if (
+      matchesField(min, m, 'minute') &&
+      matchesField(hour, h, 'hour') &&
+      matchesField(dom, d, 'dom') &&
+      matchesField(month, mo, 'month') &&
+      matchesField(dow, dw, 'dow')
+    ) {
+      results.push(new Date(cur));
+    }
+    cur = new Date(cur.getTime() + 60000);
+  }
+
+  const ul = document.getElementById('nextTimes');
+  ul.innerHTML = '';
+  if (results.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'text-gray-500 text-sm';
+    li.textContent = '次の実行時刻を計算できません（1年以内に該当なし）';
+    ul.appendChild(li);
+    return;
+  }
+  results.forEach((dt, idx) => {
+    const li = document.createElement('li');
+    li.className = 'flex items-center gap-3 text-sm';
+    const badge = document.createElement('span');
+    badge.className = 'text-xs bg-indigo-800 text-indigo-200 px-2 py-0.5 rounded';
+    badge.textContent = '#' + (idx + 1);
+    const txt = document.createElement('span');
+    txt.className = 'font-mono text-gray-200';
+    txt.textContent = dt.toLocaleString('ja-JP', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      weekday: 'short', hour: '2-digit', minute: '2-digit'
+    });
+    const diff = Math.round((dt - new Date()) / 60000);
+    const diffTxt = document.createElement('span');
+    diffTxt.className = 'text-gray-500 text-xs';
+    if (diff < 60) diffTxt.textContent = diff + '分後';
+    else if (diff < 1440) diffTxt.textContent = Math.floor(diff / 60) + '時間後';
+    else diffTxt.textContent = Math.floor(diff / 1440) + '日後';
+    li.appendChild(badge);
+    li.appendChild(txt);
+    li.appendChild(diffTxt);
+    ul.appendChild(li);
+  });
+}
+
+function copyExpression() {
+  const expr = document.getElementById('cronExpression').value;
+  navigator.clipboard.writeText(expr).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'コピー済!';
+    setTimeout(() => { btn.textContent = 'コピー'; }, 1500);
+  }).catch(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'コピー失敗';
+    setTimeout(() => { btn.textContent = 'コピー'; }, 1500);
+  });
+}
+
+// Initialize
+buildFromControls();
+</script>
+</body>
+</html>
